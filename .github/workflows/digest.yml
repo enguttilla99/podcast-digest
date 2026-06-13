@@ -1,0 +1,45 @@
+name: Podcast Digest
+
+on:
+  schedule:
+    - cron: '0 12 * * *'   # 8am ET every day (noon UTC)
+  workflow_dispatch:         # lets you trigger it manually from GitHub too
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run digest
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python digest.py
+
+      - name: Commit updated summaries & seen list
+        run: |
+          git config user.name "podcast-digest-bot"
+          git config user.email "bot@github.com"
+          git add summaries/ seen_episodes.json index.html
+          git diff --staged --quiet || git commit -m "digest: $(date -u '+%Y-%m-%d')"
+          git push
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
