@@ -37,7 +37,7 @@ jobs:
           git config user.email "bot@github.com"
           git add summaries/ seen_episodes.json index.html
           git diff --staged --quiet || git commit -m "digest: $(date -u '+%Y-%m-%d')"
-          git push
+          git pull --rebase && git push
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
