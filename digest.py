@@ -62,6 +62,16 @@ def transcribe(audio_url: str, title: str) -> str:
         urllib.request.urlretrieve(audio_url, tmp.name)
         tmp_path = tmp.name
 
+    # Groq Whisper limit is 25MB — if larger, truncate to first 24MB
+    size = os.path.getsize(tmp_path)
+    MAX = 24 * 1024 * 1024
+    if size > MAX:
+        print(f"  [transcribe] file {size//1e6:.0f}MB > 25MB limit, truncating...")
+        with open(tmp_path, "rb") as f:
+            data = f.read(MAX)
+        with open(tmp_path, "wb") as f:
+            f.write(data)
+
     print(f"  [transcribe] sending to Groq Whisper...")
     with open(tmp_path, "rb") as f:
         result = client.audio.transcriptions.create(
@@ -251,7 +261,11 @@ def load_all_summaries() -> list[dict]:
     out = []
     for f in SUMMARY_DIR.glob("*.json"):
         try:
-            out.append(json.loads(f.read_text()))
+            data = json.loads(f.read_text())
+            # ensure required fields exist
+            data.setdefault("date", "2026-01-01")
+            data.setdefault("source", "All In Podcast")
+            out.append(data)
         except:
             pass
     return out
