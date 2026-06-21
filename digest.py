@@ -28,17 +28,17 @@ PODCASTS = [
     },
     {
         "name": "BG2 Pod",
-        "rss": "https://feeds.simplecast.com/bg2pod",
+        "rss": "https://anchor.fm/s/f06c2370/podcast/rss",
         "max": 2,
     },
     {
         "name": "20VC",
-        "rss": "https://feeds.simplecast.com/9OFBsQJf",
+        "rss": "https://thetwentyminutevc.libsyn.com/rss",
         "max": 2,
     },
     {
         "name": "Invest Like the Best",
-        "rss": "https://feeds.simplecast.com/wXSGnlMp",
+        "rss": "https://investlikethebest.libsyn.com/rss",
         "max": 2,
     },
 ]
